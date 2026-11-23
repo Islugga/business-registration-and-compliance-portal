@@ -5,13 +5,14 @@ session_start();
 
 require_once __DIR__ . '/config/database.php';
 
+// Authentication
 if (!isset($_SESSION["user_id"])) {
     header("Location: login.php");
     exit();
 }
 
-// Administrators cannot access business management.
-if ($_SESSION["role"] === "admin") {
+// Administrators cannot access business management
+if (($_SESSION["role"] ?? "") === "admin") {
     header("Location: admin.php");
     exit();
 }
@@ -70,16 +71,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
 
             $error = "Unable to save your business. Please try again.";
+            $insert_stmt->close();
 
         }
-
-        $insert_stmt->close();
     }
 }
 
 // Retrieve businesses belonging to the logged-in user
-$sql = "SELECT business_id, business_name, business_type,
-               registration_status
+$sql = "SELECT business_id,
+               business_name,
+               business_type,
+               registration_status,
+               cac_registration_number,
+               registration_date,
+               tin,
+               bank_account_status,
+               bank_name,
+               bank_account_number
         FROM businesses
         WHERE user_id = ?
         ORDER BY business_id DESC";
@@ -98,6 +106,7 @@ $result = $stmt->get_result();
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -105,6 +114,7 @@ $result = $stmt->get_result();
 
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/business.css">
+
 </head>
 
 <body>
@@ -115,11 +125,14 @@ $result = $stmt->get_result();
         <div class="page-header">
 
             <div>
+
                 <h1>Business Profile Management</h1>
 
                 <p>
-                    Add and manage your business information.
+                    Add and manage your business information,
+                    registration details and post-registration requirements.
                 </p>
+
             </div>
 
             <a href="dashboard.php" class="back-btn">
@@ -229,7 +242,12 @@ $result = $stmt->get_result();
                             <th>S/N</th>
                             <th>Business Name</th>
                             <th>Business Type</th>
-                            <th>Registration Status</th>
+                            <th>CAC Status</th>
+                            <th>CAC Number</th>
+                            <th>Registration Date</th>
+                            <th>TIN Status</th>
+                            <th>Bank Account Status</th>
+                            <th>Bank Name</th>
                             <th>Actions</th>
                         </tr>
 
@@ -245,31 +263,156 @@ $result = $stmt->get_result();
 
                                 <tr>
 
+                                    <!-- Serial Number -->
                                     <td>
                                         <?php echo $count++; ?>
                                     </td>
 
+
+                                    <!-- Business Name -->
                                     <td>
-                                        <?php echo htmlspecialchars($business["business_name"], ENT_QUOTES, 'UTF-8'); ?>
+                                        <strong>
+                                            <?php echo htmlspecialchars(
+                                                $business["business_name"],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </strong>
                                     </td>
 
+
+                                    <!-- Business Type -->
                                     <td>
-                                        <?php echo htmlspecialchars($business["business_type"], ENT_QUOTES, 'UTF-8'); ?>
+                                        <?php echo htmlspecialchars(
+                                            $business["business_type"],
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ); ?>
                                     </td>
 
+
+                                    <!-- CAC Registration Status -->
                                     <td>
+
                                         <span class="status-pending">
-                                            <?php echo htmlspecialchars($business["registration_status"], ENT_QUOTES, 'UTF-8'); ?>
+
+                                            <?php echo htmlspecialchars(
+                                                $business["registration_status"] ?? "Pending",
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+
                                         </span>
+
                                     </td>
 
+
+                                    <!-- CAC Registration Number -->
                                     <td>
+
+                                        <?php if (!empty($business["cac_registration_number"])): ?>
+
+                                            <?php echo htmlspecialchars(
+                                                $business["cac_registration_number"],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+
+                                        <?php else: ?>
+
+                                            <span>Not Available</span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+
+                                    <!-- Registration Date -->
+                                    <td>
+
+                                        <?php if (!empty($business["registration_date"])): ?>
+
+                                            <?php echo htmlspecialchars(
+                                                $business["registration_date"],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+
+                                        <?php else: ?>
+
+                                            <span>Not Available</span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+
+                                    <!-- TIN Status -->
+                                    <td>
+
+                                        <?php if (!empty($business["tin"])): ?>
+
+                                            <span class="status-pending">
+                                                Provided
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="status-pending">
+                                                Not Provided
+                                            </span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+
+                                    <!-- Bank Account Status -->
+                                    <td>
+
+                                        <span class="status-pending">
+
+                                            <?php echo htmlspecialchars(
+                                                $business["bank_account_status"] ?? "Not Opened",
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- Bank Name -->
+                                    <td>
+
+                                        <?php if (!empty($business["bank_name"])): ?>
+
+                                            <?php echo htmlspecialchars(
+                                                $business["bank_name"],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+
+                                        <?php else: ?>
+
+                                            <span>Not Available</span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+
+                                    <!-- Actions -->
+                                    <td>
+
                                         <a
                                             href="edit_business.php?id=<?php echo (int) $business["business_id"]; ?>"
                                             class="update-btn"
                                         >
                                             Update
                                         </a>
+
                                     </td>
 
                                 </tr>
@@ -279,9 +422,13 @@ $result = $stmt->get_result();
                         <?php else: ?>
 
                             <tr>
-                                <td colspan="5" class="empty-state">
+
+                                <td colspan="10" class="empty-state">
+
                                     You have not added any business yet.
+
                                 </td>
+
                             </tr>
 
                         <?php endif; ?>

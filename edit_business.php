@@ -33,17 +33,25 @@ $business_types = [
     "Other"
 ];
 
-// Available registration statuses
+// Registration statuses
 $registration_statuses = [
     "Pending",
     "In Progress",
     "Registered"
 ];
 
+// Bank account statuses
+$bank_account_statuses = [
+    "Not Opened",
+    "In Progress",
+    "Opened"
+];
+
 // Retrieve the selected business
 $sql = "SELECT business_id, business_name, business_type,
                registration_status, cac_registration_number,
-               registration_date
+               registration_date, tin, bank_account_status,
+               bank_name, bank_account_number
         FROM businesses
         WHERE business_id = ? AND user_id = ?";
 
@@ -64,7 +72,6 @@ if ($result->num_rows === 0) {
 $business = $result->fetch_assoc();
 $stmt->close();
 
-
 // Process business update
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -74,11 +81,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $cac_number = trim($_POST["cac_registration_number"] ?? "");
     $registration_date = trim($_POST["registration_date"] ?? "");
 
+    $tin = trim($_POST["tin"] ?? "");
+
+    $bank_account_status = trim($_POST["bank_account_status"] ?? "");
+    $bank_name = trim($_POST["bank_name"] ?? "");
+    $bank_account_number = trim($_POST["bank_account_number"] ?? "");
+
     // Validate required fields
     if (
         empty($business_name) ||
         empty($business_type) ||
-        empty($registration_status)
+        empty($registration_status) ||
+        empty($bank_account_status)
     ) {
 
         $error = "Please complete all required fields.";
@@ -91,6 +105,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $error = "Please select a valid registration status.";
 
+    } elseif (!in_array($bank_account_status, $bank_account_statuses, true)) {
+
+        $error = "Please select a valid bank account status.";
+
     } elseif (
         $registration_status === "Registered" &&
         (empty($cac_number) || empty($registration_date))
@@ -100,10 +118,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     } elseif (
         !empty($registration_date) &&
-        !DateTime::createFromFormat('!Y-m-d', $registration_date)
+        (
+            !DateTime::createFromFormat('!Y-m-d', $registration_date) ||
+            DateTime::createFromFormat('!Y-m-d', $registration_date)->format('Y-m-d') !== $registration_date
+        )
     ) {
 
         $error = "Please enter a valid registration date.";
+
+    } elseif (
+        $bank_account_status === "Opened" &&
+        (empty($bank_name) || empty($bank_account_number))
+    ) {
+
+        $error = "Bank name and account number are required when the business account is opened.";
 
     } else {
 
@@ -113,18 +141,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     business_type = ?,
                     registration_status = ?,
                     cac_registration_number = NULLIF(?, ''),
-                    registration_date = NULLIF(?, '')
+                    registration_date = NULLIF(?, ''),
+                    tin = NULLIF(?, ''),
+                    bank_account_status = ?,
+                    bank_name = NULLIF(?, ''),
+                    bank_account_number = NULLIF(?, '')
                 WHERE business_id = ? AND user_id = ?";
 
         $update_stmt = $conn->prepare($sql);
 
         $update_stmt->bind_param(
-            "sssssii",
+            "sssssssssii",
             $business_name,
             $business_type,
             $registration_status,
             $cac_number,
             $registration_date,
+            $tin,
+            $bank_account_status,
+            $bank_name,
+            $bank_account_number,
             $business_id,
             $user_id
         );
@@ -139,10 +175,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
 
             $error = "Unable to update business information. Please try again.";
+            $update_stmt->close();
 
         }
-
-        $update_stmt->close();
     }
 
     // Preserve submitted values when validation fails
@@ -151,6 +186,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $business["registration_status"] = $registration_status;
     $business["cac_registration_number"] = $cac_number;
     $business["registration_date"] = $registration_date;
+
+    $business["tin"] = $tin;
+    $business["bank_account_status"] = $bank_account_status;
+    $business["bank_name"] = $bank_name;
+    $business["bank_account_number"] = $bank_account_number;
 }
 
 ?>
@@ -193,7 +233,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         </div>
 
-
         <!-- Success Message -->
         <?php if (isset($_GET["success"])): ?>
 
@@ -203,7 +242,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <?php endif; ?>
 
-
         <!-- Error Message -->
         <?php if (!empty($error)): ?>
 
@@ -212,7 +250,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
         <?php endif; ?>
-
 
         <!-- Edit Business Form -->
         <div class="content-card">
@@ -239,7 +276,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     >
 
                 </div>
-
 
                 <!-- Business Type -->
                 <div class="form-group">
@@ -270,7 +306,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 </div>
 
-
                 <!-- Registration Status -->
                 <div class="form-group">
 
@@ -300,7 +335,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 </div>
 
-
                 <!-- CAC Registration Number -->
                 <div class="form-group">
 
@@ -320,7 +354,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 </div>
 
-
                 <!-- Registration Date -->
                 <div class="form-group">
 
@@ -338,6 +371,95 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 </div>
 
+                <!-- TIN -->
+                <div class="form-group">
+
+                    <label for="tin">
+                        Tax Identification Number (TIN)
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tin"
+                        name="tin"
+                        class="form-control"
+                        value="<?php echo htmlspecialchars($business["tin"] ?? "", ENT_QUOTES, 'UTF-8'); ?>"
+                        placeholder="Enter Tax Identification Number"
+                        maxlength="50"
+                    >
+
+                    <small>
+                        Enter your business Tax ID if it has been issued.
+                    </small>
+
+                </div>
+
+                <!-- Bank Account Status -->
+                <div class="form-group">
+
+                    <label for="bank_account_status">
+                        Business Bank Account Status
+                    </label>
+
+                    <select
+                        id="bank_account_status"
+                        name="bank_account_status"
+                        class="form-control"
+                        required
+                    >
+
+                        <?php foreach ($bank_account_statuses as $status): ?>
+
+                            <option
+                                value="<?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>"
+                                <?php echo (($business["bank_account_status"] ?? "Not Opened") === $status) ? "selected" : ""; ?>
+                            >
+                                <?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+                <!-- Bank Name -->
+                <div class="form-group">
+
+                    <label for="bank_name">
+                        Bank Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bank_name"
+                        name="bank_name"
+                        class="form-control"
+                        value="<?php echo htmlspecialchars($business["bank_name"] ?? "", ENT_QUOTES, 'UTF-8'); ?>"
+                        placeholder="Enter bank name"
+                        maxlength="100"
+                    >
+
+                </div>
+
+                <!-- Business Account Number -->
+                <div class="form-group">
+
+                    <label for="bank_account_number">
+                        Business Account Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bank_account_number"
+                        name="bank_account_number"
+                        class="form-control"
+                        value="<?php echo htmlspecialchars($business["bank_account_number"] ?? "", ENT_QUOTES, 'UTF-8'); ?>"
+                        placeholder="Enter business account number"
+                        maxlength="50"
+                    >
+
+                </div>
 
                 <!-- Form Buttons -->
                 <div class="form-actions">
@@ -357,7 +479,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
 
     </div>
-
 
     <!-- Automatically Dismiss Messages -->
     <script>
