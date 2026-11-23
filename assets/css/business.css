@@ -1,0 +1,253 @@
+
+/* =================================
+   BUSINESS MANAGEMENT PAGE
+================================= */
+
+.page-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+/* Page Header */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #1f3346;
+    margin-bottom: 8px;
+}
+
+.page-header p {
+    color: #555f69;
+}
+
+.back-btn {
+    display: inline-block;
+    background: #1f3346;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-btn:hover {
+    background: #344e66;
+}
+
+/* Content Cards */
+
+.content-card {
+    background: #ffffff;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(31, 51, 70, 0.08);
+}
+
+.content-card h2 {
+    color: #1f3346;
+    margin-bottom: 20px;
+}
+
+/* Business Form */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #292929;
+}
+
+.form-control {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #c5ced8;
+    border-radius: 5px;
+    font-size: 16px;
+    background: #ffffff;
+    color: #292929;
+}
+
+.form-control:focus {
+    outline: 2px solid #1f3346;
+    outline-offset: 2px;
+}
+
+/* Business Table */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #c5ced8;
+}
+
+.data-table th {
+    background: #1f3346;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.data-table tbody tr:hover {
+    background: #f4f6f8;
+}
+
+/* Registration Status */
+
+.status-pending {
+    display: inline-block;
+    background: #fff0cc;
+    color: #704d00;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.status-registered {
+    display: inline-block;
+    background: #d9f2e3;
+    color: #155c35;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.status-progress {
+    display: inline-block;
+    background: #e1ecfa;
+    color: #214c7a;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Update Business Button */
+
+.update-btn {
+    display: inline-block;
+    background: #1f3346;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.update-btn:hover {
+    background: #344e66;
+}
+
+/* Edit Business Form Actions */
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.cancel-btn {
+    display: inline-block;
+    background: #e5e9ed;
+    color: #1f3346;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.cancel-btn:hover {
+    background: #d3dbe3;
+}
+
+/* Keyboard Accessibility */
+
+.back-btn:focus-visible,
+.update-btn:focus-visible,
+.cancel-btn:focus-visible {
+    outline: 3px solid #344e66;
+    outline-offset: 3px;
+}
+
+.form-control:focus-visible {
+    outline: 2px solid #1f3346;
+    outline-offset: 2px;
+}
+
+/* Empty Business List */
+
+.empty-state {
+    text-align: center !important;
+    padding: 25px !important;
+    color: #555f69;
+}
+
+/* Success and Error Messages */
+
+.auto-dismiss {
+    transition: opacity 0.5s ease;
+}
+
+/* Responsive Design */
+
+@media (max-width: 600px) {
+
+    .page-container {
+        width: 94%;
+        margin: 25px auto;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .content-card {
+        padding: 18px;
+    }
+
+    .back-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions .primary-btn,
+    .form-actions .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+}
