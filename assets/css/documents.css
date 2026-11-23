@@ -1,0 +1,231 @@
+.page-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+/* Page Header */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #1f3346;
+    margin-bottom: 8px;
+}
+
+.page-header p {
+    color: #555f69;
+}
+
+.back-btn {
+    display: inline-block;
+    background: #1f3346;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-btn:hover {
+    background: #344e66;
+}
+
+/* Content Cards */
+
+.content-card {
+    background: #ffffff;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(31, 51, 70, 0.08);
+}
+
+.content-card h2 {
+    color: #1f3346;
+    margin-bottom: 20px;
+}
+
+/* Document Form */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #292929;
+}
+
+.form-control {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #c5ced8;
+    border-radius: 5px;
+    font-size: 16px;
+    background: #ffffff;
+    color: #292929;
+}
+
+.form-control:focus {
+    outline: 2px solid #1f3346;
+    outline-offset: 2px;
+}
+
+.file-help {
+    display: block;
+    margin-top: 8px;
+    color: #555f69;
+    font-size: 14px;
+}
+
+/* Add Business Link */
+
+.primary-link {
+    display: inline-block;
+    background: #1f3346;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.primary-link:hover {
+    background: #344e66;
+}
+
+/* Document Table */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #c5ced8;
+}
+
+.data-table th {
+    background: #1f3346;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.data-table tbody tr:hover {
+    background: #f4f6f8;
+}
+
+/* Document Actions */
+
+.document-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.download-btn {
+    display: inline-block;
+    background: #1f3346;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.download-btn:hover {
+    background: #344e66;
+}
+
+.delete-form {
+    margin: 0;
+}
+
+.delete-btn {
+    background: #a32626;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.delete-btn:hover {
+    background: #7f1d1d;
+}
+
+/* Empty Document List */
+
+.empty-state {
+    text-align: center !important;
+    padding: 25px !important;
+    color: #555f69;
+}
+
+/* Automatic Message Dismissal */
+
+.auto-dismiss {
+    transition: opacity 0.5s ease;
+}
+
+/* Keyboard Accessibility */
+
+.back-btn:focus-visible,
+.primary-link:focus-visible,
+.download-btn:focus-visible,
+.delete-btn:focus-visible {
+    outline: 3px solid #344e66;
+    outline-offset: 3px;
+}
+
+/* Responsive Design */
+
+@media (max-width: 600px) {
+
+    .page-container {
+        width: 94%;
+        margin: 25px auto;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .content-card {
+        padding: 18px;
+    }
+
+    .back-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .document-actions {
+        align-items: flex-start;
+    }
+
+}
